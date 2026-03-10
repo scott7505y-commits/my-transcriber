@@ -4,15 +4,10 @@ import os
 
 st.title("動画文字起こしサイト")
 
-st.markdown("""
-### 使い方
-動画をアップロードして「文字起こし開始」ボタンを押してください。
-""")
-
 uploaded_file = st.file_uploader("動画ファイルを選択してください", type=["mp4"])
 
 if uploaded_file is not None:
-    temp_file_path = os.path.join(os.getcwd(), "temp_video.mp4")
+    temp_file_path = "temp_video.mp4"
     
     if st.button("文字起こし開始"):
         with open(temp_file_path, "wb") as f:
@@ -26,7 +21,6 @@ if uploaded_file is not None:
             
             st.text_area("文字起こし結果", result["text"], height=300)
             
-            # ここがDeepLリンクの追加部分です
             st.markdown("---")
             st.markdown("[DeepL 翻訳サイトはこちら](https://www.deepl.com/translator)")
             
@@ -37,4 +31,3 @@ if uploaded_file is not None:
             
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
-
