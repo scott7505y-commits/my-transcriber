@@ -4,37 +4,29 @@ import os
 
 st.title("動画文字起こしサイト")
 
-st.markdown("""
-### 使い方
-1. 動画ファイルをアップロードしてください（mp4形式）。
-2. 「文字起こし開始」ボタンを押すと処理が始まります。
-3. 結果が表示されたら、DeepL で翻訳したりテキストを保存したりできます！
-""")
-
 uploaded_file = st.file_uploader("動画ファイルを選択してください", type=["mp4"])
 
 if uploaded_file is not None:
-    temp_file_path = "temp_video.mp4"
+    # ファイルを保存するパスを定義
+    save_path = "temp_video.mp4"
     
     if st.button("文字起こし開始"):
-        with open(temp_file_path, "wb") as f:
+        # 一旦、前のファイルを消す
+        if os.path.exists(save_path):
+            os.remove(save_path)
+            
+        with open(save_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-        st.write("文字起こし中...（数分かかる場合があります）")
+        st.write("文字起こし中...")
         
         try:
             model = whisper.load_model("base")
-            result = model.transcribe(temp_file_path)
+            result = model.transcribe(save_path)
             
-            st.text_area("文字起こし結果", result["text"], height=300)
-            
-            # --- ここにリンクとボタンがあるはずです ---
+            st.text_area("結果", result["text"])
             st.markdown("---")
-            st.markdown("[DeepL 翻訳サイトはこちら](https://www.deepl.com/translator)")
-            st.download_button("テキストをダウンロード", result["text"], "result.txt")
+            st.markdown("[DeepL 翻訳はこちら](https://www.deepl.com/translator)")
             
         except Exception as e:
-            st.error(f"エラーが発生しました: {e}")
-            
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
+            st.error(f"エラー内容: {e}")
